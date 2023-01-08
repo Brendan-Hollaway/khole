@@ -1,9 +1,10 @@
 import pygame as pg
 from typing import Optional
-import log
 
 # from ketamine_injector import KetamineInjector, get_injectors()
 from ketamine_injector import get_injectors
+from constants import *
+from log import get_logger
 
 # Type aliases for type hints
 Event = pg.event.Event
@@ -15,9 +16,6 @@ class Runner:
     and you'll be wayyyyyyy too loopy once we're done
     """
 
-    # Want to change this? Unleash the horrors within...
-    SCREEN_SIZE = [800, 800]
-
     # Who uses booleans when you could cooler booleans?
     TIME_TO_QUIT = False
     KEEP_PLAYING = True
@@ -27,20 +25,41 @@ class Runner:
         Started at the bottom, now I'm lying on my bottom, about to
         be injected with enough ketamine to see into the void.
         """
-        self.log = log.get_logger()
+        self.log = get_logger()
 
         self.running_on_ketamine = True
-        self.curr_ketamine = 0
+        self.curr_ketamine = 10000000
 
         self.injectors = get_injectors()
         self.injectors[0].upgrade_injector()  # first injector is free!
 
-        self.screen = pg.display.set_mode(self.SCREEN_SIZE)
+        self.screen = pg.display.set_mode(SCREEN_SIZE)
         self.injecting_time_type = self.init_injecting_time()
         pg.event.set_blocked(pg.MOUSEMOTION)
 
+        self.clear()
+        self.all_sprites = self.init_all_sprites()
+        pg.display.flip()
+        # TODO(bhollaway): parameterize, pick a better font
+        self.font = pg.font.Font("../assets/fonts/joystix_mono.ttf", 20)
+
+    def init_all_sprites(self):
+        all_sprites = pg.sprite.Group()
+        for injector in self.injectors:
+            all_sprites.add(injector)
+
+        all_sprites.update()
+        all_sprites.draw(self.screen)
+        self.log.debug("Done initting sprites")
+        return all_sprites
+
     def save_progress(self):
         """Even quitters get a second chance..."""
+        # TODO(bhollaway): Pickle the runner? Or just the curr_ketamine and injectors?
+        pass
+
+    def load_progress(self):
+        """Welcome back to the K-hole"""
         # TODO(bhollaway)
         pass
 
@@ -48,28 +67,40 @@ class Runner:
         """
         I told you to handle it! C'mon, just like, handle it
 
-        Return TIME_TO_QUIT if it's time to quit :'(
+        # Return TIME_TO_QUIT if it's time to quit :'(
         """
         self.log.debug(f"event: {event}")
         # Wow, giving up already?
         if event.type == pg.QUIT:
             self.running_on_ketamine = False
-            return self.TIME_TO_QUIT
+            # return self.TIME_TO_QUIT
 
         # Mash those keys
         elif event.type == pg.KEYDOWN:
+            # Can't escape from the K-hole... Except via K_ESCAPE
             if event.key == pg.locals.K_ESCAPE:
                 self.running_on_ketamine = False
-                return self.TIME_TO_QUIT
+                # return self.TIME_TO_QUIT
 
+            old_ket = self.curr_ketamine
             for injector in self.injectors:
                 self.curr_ketamine = injector.handle_key_down(event, self.curr_ketamine)
+            if self.curr_ketamine != old_ket:
+                self.log.info(
+                    f"Ketamine post manual injection: {self.curr_ketamine:.2f}"
+                )
 
         elif event.type == self.injecting_time_type:
             self.curr_ketamine += self.injecting_time()
             self.log.info(f"Ketamine post injection: {self.curr_ketamine:.2f}")
 
-        return self.KEEP_PLAYING
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            for injector in self.injectors:
+                self.curr_ketamine = injector.handle_mouse_down(
+                    event, self.curr_ketamine
+                )
+
+        # return self.KEEP_PLAYING
 
     def injecting_time(self) -> float:
         """
@@ -92,10 +123,18 @@ class Runner:
         pg.time.set_timer(injecting_time_type, injecting_time_ms)
         return injecting_time_type
 
-    # def draw(self):
-    #     """ TODO(bhollaway): move this to its own file """
-    #     # Fill the screen with white
-    #     screen.fill((255, 255, 255))
+    def clear(self):
+        """TODO(bhollaway): move this to its own file"""
+        # Fill the screen with white
+        self.screen.fill((255, 255, 255))
+
+    def update_ketamine_counter(self):
+        antialias = True
+        text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
+        ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)
+        self.screen.blit(ketamine_counter, rect)
 
     def main_loop(self):
         """
@@ -103,12 +142,20 @@ class Runner:
 
         Ba-dum-tss
         """
+        clock = pg.time.Clock()
         while self.running_on_ketamine:
+            clock.tick(FPS)
+
             event = pg.event.wait()
-            update = self.handle_event(event)
-            if update == self.TIME_TO_QUIT:
-                break
-            curr_ketamine = update
+            self.handle_event(event)
+
+            # Draw shit
+            self.clear()
+            self.all_sprites.update()
+            self.all_sprites.draw(self.screen)
+            self.update_ketamine_counter()
+
+            pg.display.flip()
 
         self.log.warning("Exiting now!")
         self.save_progress()
