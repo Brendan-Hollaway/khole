@@ -1,3 +1,4 @@
+from typing import Optional
 from enum import Enum
 import pygame as pg
 from constants import *
@@ -16,6 +17,7 @@ def write_text(
     alignment: Align,
     color: tuple,
     font: pg.font.Font = DEFAULT_FONT,
+    offset: Optional[tuple] = None,
     antialias=True,
 ):
     """
@@ -26,7 +28,10 @@ def write_text(
     """
     text_img = font.render(text, antialias, color)
     rect = rect_for_alignment(text_img, image, alignment)
+    if offset:
+        rect.move_ip(offset)
     image.blit(text_img, rect)
+    return text_img
 
 
 def rect_for_alignment(small_img: pg.Surface, big_img: pg.Surface, alignment: Align):

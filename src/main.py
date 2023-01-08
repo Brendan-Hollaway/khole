@@ -9,6 +9,7 @@ from ketamine_injector_visualizer import get_injectors
 from constants import *
 from text_writer import *
 from log import get_logger
+from ketamine_status import KetamineStatus
 
 # Type aliases for type hints
 Event = pg.event.Event
@@ -32,7 +33,7 @@ class Runner:
         self.log = get_logger()
 
         self.running_on_ketamine = True
-        self.curr_ketamine = 10000000
+        self.curr_ketamine = 50 * 12**9
 
         self.injectors = get_injectors()
         self.injectors[0].upgrade_injector()  # first injector is free!
@@ -43,9 +44,7 @@ class Runner:
 
         self.clear()
         self.all_sprites = self.init_all_sprites()
-        pg.display.flip()
-        # TODO(bhollaway): parameterize, pick a better font
-        # self.font = pg.font.Font("../assets/fonts/joystix_mono.ttf", 20)
+        self.status = KetamineStatus()
 
     def init_all_sprites(self):
         all_sprites = pg.sprite.Group()
@@ -134,14 +133,20 @@ class Runner:
 
     def update_ketamine_counter(self):
         antialias = True
-        text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
-        write_text(
-            text,
+        counter_text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
+        counter_text_surface = write_text(
+            counter_text,
             self.screen,
             Align.TOP_CENTER,
             KETAMINE_COUNTER_COLOR,
             font=KETAMINE_FONT,
         )
+
+        status = self.status.get_status(self.curr_ketamine)
+        font = KETAMINE_STATUS_FONT if status != "ACHIEVED K-HOLE" else KETAMINE_VICTORY_FONT
+        status_text = f"Status: {status}"
+        vert_offset = counter_text_surface.get_size()[1]
+        write_text(status_text, self.screen, Align.TOP_CENTER, KETAMINE_COUNTER_COLOR, font=font, offset=(0, vert_offset))
         # ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
         # rect = pg.rect.Rect(0, 0, 0, 0)
         # rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)

@@ -57,11 +57,11 @@ def get_rect(i: int):
     """
     rows = NUM_INJECTORS // 2
     rect = pg.rect.Rect(0, 0, 0, 0)  # size is irrelevant
-    rect.top = (i % rows) * (SCREEN_HEIGHT / rows)
+    rect.top = ((i % rows) * (TOTAL_INJECTOR_HEIGHT / rows)) + STATUS_BAR_SIZE[1]
     if i <= 4:
         rect.left = 0
     else:
-        rect.left = 3 * SCREEN_WIDTH / 4
+        rect.left = SCREEN_WIDTH / 2
     # get_logger().info(f"Rect {i}: {rect}. left: {rect.left}, right: {rect.right}")
     return rect
 
