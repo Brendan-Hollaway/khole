@@ -1,0 +1,11 @@
+1. Add an injector-shaped cursor
+2. Create ~10 different sized "injectors" (with images)
+3. Create ~10 different states of "high" (with images)
+4. Map each injector to a keyboard key
+    - And allow mouse presses too!
+
+# Basic game mechanics
+1. every second update ketamine
+2. handle mouse presses:
+    - click some sub-button to upgrade
+    - click main thing to mine
