@@ -151,9 +151,13 @@ class KetamineInjectorVisualizer(KetamineInjector, pg.sprite.Sprite):
 
     def draw_upgrade_button(self):
         # TODO(bhollaway): Better joke here
-        """Hey Micah, you're an artist, think you can do better, huh?"""
-        upgrade_or_buy = "Upgrade" if self.upgrade_count > 0 else "Buy"
-        text = f"{upgrade_or_buy}: {self.get_cost():.0f}"
+        """Hey Micah, you're an artist, think you can do better buttons, huh?"""
+        cost = f"{self.get_cost():.0f}"
+        text = "Upgrade: " + cost
+        if self.upgrade_count == 0:
+            text = "Buy: " + cost
+        elif self.upgrade_count >= self.max_upgrade_count:
+            text = "At max upgrades!"
         write_text(text, self.image, Align.BOT_CENTER, UPGRADE_BUTTON_TEXT_COLOR)
 
     def handle_mouse_down(self, event: pg.event.Event, curr_ketamine: float) -> float:

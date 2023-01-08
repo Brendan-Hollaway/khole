@@ -48,6 +48,7 @@ class KetamineInjector(object):
         self.upgrade_count += 1
 
     def can_upgrade(self, curr_ketamine: float):
+        """I dunno yungin'... Are you ready for this level of power?"""
         if self.upgrade_count >= self.max_upgrade_count:
             self.log.warning(
                 f"Cannot upgrade: Already at max upgrade count of {self.max_upgrade_count}"
@@ -81,18 +82,12 @@ class KetamineInjector(object):
         Handles upgrading the injector, if the key requires upgrading.
         If the key is for injecting, return the amount to inject.
         """
-        # TODO(bhollaway): handle upgrades
         if event.key != self.key:
             return curr_ketamine
 
         self.log.debug(f"Mod: {event.mod}")
-        if event.mod & pg.KMOD_SHIFT:
+        if event.mod & pg.KMOD_SHIFT: # Press shift to upgrade!
             return self.try_upgrade(curr_ketamine)
 
-        # Just pressing the key, e.g. without a modifier like control
-        # Oh god have we lost control? I'm going crazzzzzzy on ketamine!
-        else:
-            return curr_ketamine + self.inject_ketamine()
-
-        self.log.error("Unknown key modifier combo! Assuming you want to inject...")
+        # Inject!
         return curr_ketamine + self.inject_ketamine()
