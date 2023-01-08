@@ -5,6 +5,7 @@ from constants import *
 
 class Align(Enum):
     """No, patrick, "a line" is not an alignment either"""
+
     TOP_CENTER = 1
     BOT_CENTER = 2
 

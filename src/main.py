@@ -135,7 +135,13 @@ class Runner:
     def update_ketamine_counter(self):
         antialias = True
         text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
-        write_text(text, self.screen, Align.TOP_CENTER, KETAMINE_COUNTER_COLOR, font=KETAMINE_FONT)
+        write_text(
+            text,
+            self.screen,
+            Align.TOP_CENTER,
+            KETAMINE_COUNTER_COLOR,
+            font=KETAMINE_FONT,
+        )
         # ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
         # rect = pg.rect.Rect(0, 0, 0, 0)
         # rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)

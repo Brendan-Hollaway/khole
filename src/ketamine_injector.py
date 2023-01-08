@@ -4,6 +4,7 @@ import math
 from log import get_logger
 from constants import *
 
+
 class KetamineInjector(object):
     """The fastest way to a khole or your money back!"""
 
@@ -77,7 +78,6 @@ class KetamineInjector(object):
             return curr_ketamine - cost
         # TODO(bhollaway): Better errors than just the text printouts?...
         return curr_ketamine
-
 
     def handle_key_down(self, event: pg.event.Event, curr_ketamine: float) -> float:
         """

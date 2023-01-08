@@ -8,11 +8,13 @@ from constants import *
 from text_writer import *
 from ketamine_injector import KetamineInjector
 
+
 class InjectorParams:
     """
     Could this whole class just be a dict? Oh absolutely. Will I make it a dict?
     Nah, I kinda feel like being a dict about it tbh
     """
+
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         if not "text_color" in self.kwargs:
@@ -23,15 +25,27 @@ def get_injector_params():
     # "Joint", "Syringe",
     return [
         InjectorParams(key=K_q, name="1mg of K-Dust", img_name="dust_pile.png"),
-        InjectorParams(key=K_w, name="The PinpricKer", img_name="pinpricker.jpg", text_color=WHITE),
+        InjectorParams(
+            key=K_w, name="The PinpricKer", img_name="pinpricker.jpg", text_color=WHITE
+        ),
         InjectorParams(key=K_e, name="Pile o' Pill Kaps", img_name="pile_of_pills.jpg"),
         InjectorParams(key=K_r, name="IV: K in My Veins!", img_name="iv.jpg"),
-        InjectorParams(key=K_t, name="Wheelbarrow of K-Dust", img_name="wheelbarrow.png"),
+        InjectorParams(
+            key=K_t, name="Wheelbarrow of K-Dust", img_name="wheelbarrow.png"
+        ),
         InjectorParams(key=K_y, name="Cement TrucK", img_name="cement_truck.jpg"),
-        InjectorParams(key=K_u, name="NuKe", img_name="nuke_explosion.jpeg", text_color=WHITE),
-        InjectorParams(key=K_i, name="Planet K", img_name="planet_k.jpg", text_color=WHITE),
-        InjectorParams(key=K_o, name="GalaKsy", img_name="galaxy.jpg", text_color=WHITE),
-        InjectorParams(key=K_p, name="BlacK Hole", img_name="black_hole.jpg", text_color=WHITE),
+        InjectorParams(
+            key=K_u, name="NuKe", img_name="nuke_explosion.jpeg", text_color=WHITE
+        ),
+        InjectorParams(
+            key=K_i, name="Planet K", img_name="planet_k.jpg", text_color=WHITE
+        ),
+        InjectorParams(
+            key=K_o, name="GalaKsy", img_name="galaxy.jpg", text_color=WHITE
+        ),
+        InjectorParams(
+            key=K_p, name="BlacK Hole", img_name="black_hole.jpg", text_color=WHITE
+        ),
     ]
 
 
@@ -74,7 +88,6 @@ def get_injectors():
     return injectors
 
 
-
 class KetamineInjectorVisualizer(KetamineInjector, pg.sprite.Sprite):
     """Because two classes is better than one!"""
 
@@ -88,7 +101,7 @@ class KetamineInjectorVisualizer(KetamineInjector, pg.sprite.Sprite):
         # Antialias text
         self.antialias = True
 
-        self.button_rect = None # set in add_button
+        self.button_rect = None  # set in add_button
 
         self.original_image = self.init_image()
         self.image = self.original_image.copy()
@@ -119,7 +132,7 @@ class KetamineInjectorVisualizer(KetamineInjector, pg.sprite.Sprite):
         if self.image_name != "":
             picture = read_img(self.image_name)
             picture = pg.transform.scale(picture, IMAGE_SIZE)
-            image.blit(picture, pg.rect.Rect((0,0), IMAGE_SIZE))
+            image.blit(picture, pg.rect.Rect((0, 0), IMAGE_SIZE))
 
         write_text(self.name, image, Align.TOP_CENTER, self.text_color)
         self.add_button(image)
