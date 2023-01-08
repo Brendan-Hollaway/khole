@@ -1,9 +1,13 @@
 import pygame as pg
+
+pg.init()  # I hate pygame sometimes
+
 from typing import Optional
 
 # from ketamine_injector import KetamineInjector, get_injectors()
-from ketamine_injector import get_injectors
+from ketamine_injector_visualizer import get_injectors
 from constants import *
+from text_writer import *
 from log import get_logger
 
 # Type aliases for type hints
@@ -41,7 +45,7 @@ class Runner:
         self.all_sprites = self.init_all_sprites()
         pg.display.flip()
         # TODO(bhollaway): parameterize, pick a better font
-        self.font = pg.font.Font("../assets/fonts/joystix_mono.ttf", 20)
+        # self.font = pg.font.Font("../assets/fonts/joystix_mono.ttf", 20)
 
     def init_all_sprites(self):
         all_sprites = pg.sprite.Group()
@@ -131,10 +135,11 @@ class Runner:
     def update_ketamine_counter(self):
         antialias = True
         text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
-        ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
-        rect = pg.rect.Rect(0, 0, 0, 0)
-        rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)
-        self.screen.blit(ketamine_counter, rect)
+        write_text(text, self.screen, Align.TOP_CENTER, KETAMINE_COUNTER_COLOR, font=KETAMINE_FONT)
+        # ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
+        # rect = pg.rect.Rect(0, 0, 0, 0)
+        # rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)
+        # self.screen.blit(ketamine_counter, rect)
 
     def main_loop(self):
         """
@@ -162,7 +167,6 @@ class Runner:
 
 
 def main():
-    pg.init()
     runner = Runner()
     runner.main_loop()
     pg.quit()
