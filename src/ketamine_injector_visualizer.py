@@ -68,16 +68,14 @@ def get_rect(i: int):
 def get_injectors():
     """So many sharp objects to collect!"""
     base_cost = 10
+    cost_exp = 15
+    inject_exp = 8
     cost_mult = 1.5
-    inject_mult = 1.3
     injectors = [
         KetamineInjectorVisualizer(
-            init_cost=(base_cost ** (i + 1) if (i + 1) > 0 else base_cost / cost_mult),
-            init_inject=(
-                base_cost ** ((i + 1) - 1) if (i + 1) > 0 else 1 / inject_mult
-            ),
+            init_cost=(base_cost * (cost_exp ** i) if (i + 1) > 0 else base_cost / cost_mult),
+            init_inject=inject_exp ** i,
             cost_mult=cost_mult,
-            inject_mult=inject_mult,
             rect=get_rect(i),
             **params.kwargs,
         )

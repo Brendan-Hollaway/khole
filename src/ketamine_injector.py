@@ -13,7 +13,6 @@ class KetamineInjector(object):
         init_cost: float,
         init_inject: float,
         cost_mult: float,
-        inject_mult: float,
         key: int,
         name: str,
         max_upgrade_count: int = 10,
@@ -22,7 +21,6 @@ class KetamineInjector(object):
         self.cost = init_cost
         self.init_inject = init_inject
         self.cost_mult = cost_mult
-        self.inject_mult = inject_mult
         self.key = key  # key on the keyboard
         self.name = name
 
@@ -46,10 +44,7 @@ class KetamineInjector(object):
     def upgrade_injector(self):
         """Bigger. Deeper. Ketaminer."""
         self.cost *= self.cost_mult
-        if self.inject == 0:
-            self.inject = self.init_inject
-        else:
-            self.inject *= self.inject_mult
+        self.inject += self.init_inject
         self.upgrade_count += 1
 
     def can_upgrade(self, curr_ketamine: float):
@@ -92,7 +87,7 @@ class KetamineInjector(object):
 
         self.log.debug(f"Mod: {event.mod}")
         if event.mod & pg.KMOD_SHIFT:
-            self.try_upgrade(curr_ketamine)
+            return self.try_upgrade(curr_ketamine)
 
         # Just pressing the key, e.g. without a modifier like control
         # Oh god have we lost control? I'm going crazzzzzzy on ketamine!

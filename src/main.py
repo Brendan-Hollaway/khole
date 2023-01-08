@@ -33,7 +33,7 @@ class Runner:
         self.log = get_logger()
 
         self.running_on_ketamine = True
-        self.curr_ketamine = 50 * 12**9
+        self.curr_ketamine = 0
 
         self.injectors = get_injectors()
         self.injectors[0].upgrade_injector()  # first injector is free!
