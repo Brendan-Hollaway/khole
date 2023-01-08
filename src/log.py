@@ -1,0 +1,13 @@
+import logging
+
+_LOGGER = None
+
+
+def get_logger():
+    global _LOGGER
+    if _LOGGER is None:
+        # logging.basicConfig(format="[%(levelname) %(name)] %(asctime) %(message)", datefmt="%H:$M:%S",level=logging.INFO)
+        logging.basicConfig(level=logging.DEBUG)
+        _LOGGER = logging.getLogger("")
+        _LOGGER.info("Started logging")
+    return _LOGGER
