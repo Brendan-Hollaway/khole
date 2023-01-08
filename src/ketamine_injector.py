@@ -1,6 +1,7 @@
 import pygame
-from pygame.locals import * # Keys to press
+from pygame.locals import *  # Keys to press
 import random
+import log
 
 
 def get_keys():
@@ -17,8 +18,10 @@ def get_injectors():
     inject_mult = 1.3
     return [
         KetamineInjectorVisualizer(
-            init_cost=(base_cost**(i+1) if (i+1) > 0 else 10 / cost_mult),
-            init_inject=(base_cost ** ((i+1) - 1) if (i+1) > 0 else 1 / inject_mult),
+            init_cost=(base_cost ** (i + 1) if (i + 1) > 0 else 10 / cost_mult),
+            init_inject=(
+                base_cost ** ((i + 1) - 1) if (i + 1) > 0 else 1 / inject_mult
+            ),
             cost_mult=cost_mult,
             inject_mult=inject_mult,
             keyboard_key=key,
@@ -48,23 +51,33 @@ class KetamineInjector(object):
         # Start at 0, upgrade to init_inject once it's ready for injecting
         self.inject = 0
 
-    def cost(self):
+        self.log = log.get_logger()
+        self.log.error(f"init inject: {init_inject}")
+
+    def get_cost(self):
         """What would you give for just a bit more ketamine?"""
         return self.cost
 
     def inject_ketamine(self):
         """Returns the amount of that sweet sweet ketamine to inject right into those veins"""
+        self.log.info(f"Inject is: {self.inject}")
         return self.inject
 
     def upgrade_injector(self):
         """Bigger. Deeper. Ketaminer."""
         self.cost *= self.cost_mult
         if self.inject == 0:
+            self.log.error(f"init inject: f{self.init_inject}")
             self.inject = self.init_inject
         else:
             self.inject *= self.inject_mult
 
-    def handle_key_down(self, event: pygame.event.Event) -> float:
+    def can_upgrade(self, current_ketamine: float):
+        return current_ketamine >= self.cost
+
+    def handle_key_down(
+        self, event: pygame.event.Event, current_ketamine: float
+    ) -> float:
         """
         Is it my turn?
 
@@ -72,9 +85,29 @@ class KetamineInjector(object):
         If the key is for injecting, return the amount to inject.
         """
         # TODO(bhollaway): handle upgrades
-        if event.key == self.key:
-            return self.inject_ketamine()
-        return 0
+        if event.key != self.key:
+            return current_ketamine
+
+        self.log.debug(f"Mod: {event.mod}")
+        if event.mod & pygame.KMOD_SHIFT:
+            if self.can_upgrade(current_ketamine):
+                cost = self.cost
+                self.upgrade_injector()
+                return current_ketamine - cost
+            else:
+                # TODO(bhollaway): Should really figure out a way to specify an error...
+                self.log.warning(
+                    f"Insufficient ketamine to upgrade! Need {self.cost} only have {current_ketamine}"
+                )
+                return current_ketamine
+
+        # Just pressing the key, e.g. without a modifier like control
+        # Oh god have we lost control? I'm going crazzzzzzy on ketamine!
+        else:
+            return current_ketamine + self.inject_ketamine()
+
+        self.log.error("Unknown key modifier combo! Assuming you want to inject...")
+        return current_ketamine + self.inject_ketamine()
 
 
 class KetamineInjectorVisualizer(KetamineInjector, pygame.sprite.Sprite):

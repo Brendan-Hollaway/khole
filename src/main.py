@@ -22,7 +22,6 @@ class Runner:
     TIME_TO_QUIT = False
     KEEP_PLAYING = True
 
-
     def __init__(self):
         """
         Started at the bottom, now I'm lying on my bottom, about to
@@ -34,7 +33,7 @@ class Runner:
         self.curr_ketamine = 0
 
         self.injectors = get_injectors()
-        self.injectors[0].upgrade_injector() # first injector is free!
+        self.injectors[0].upgrade_injector()  # first injector is free!
 
         self.screen = pg.display.set_mode(self.SCREEN_SIZE)
         self.injecting_time_type = self.init_injecting_time()
@@ -59,8 +58,12 @@ class Runner:
 
         # Mash those keys
         elif event.type == pg.KEYDOWN:
+            if event.key == pg.locals.K_ESCAPE:
+                self.running_on_ketamine = False
+                return self.TIME_TO_QUIT
+
             for injector in self.injectors:
-                self.curr_ketamine += injector.handle_key_down(event)
+                self.curr_ketamine = injector.handle_key_down(event, self.curr_ketamine)
 
         elif event.type == self.injecting_time_type:
             self.curr_ketamine += self.injecting_time()
@@ -74,7 +77,7 @@ class Runner:
 
         Return the amount of ketamine to inject
         """
-        self.log.info("It's injecting time!")
+        self.log.debug("It's injecting time!")
         moar_ketamine = 0
         for injector in self.injectors:
             moar_ketamine += injector.inject_ketamine()
@@ -84,19 +87,15 @@ class Runner:
         """
         We're on the clock y'all: every second, it's injecting time!
         """
-        # injecting_time_type = pg.event.custom_type()
-        injecting_time_type = pg.USEREVENT
-        self.log.info(f"injecting type: {injecting_time_type}")
-        self.log.info(f": {injecting_time_type}")
+        injecting_time_type = pg.event.custom_type()
         injecting_time_ms = 1000
-        # pg.time.set_timer(Event(injecting_time_type), injecting_time_ms)
         pg.time.set_timer(injecting_time_type, injecting_time_ms)
         return injecting_time_type
 
-    def draw(self):
-        """ TODO(bhollaway): move this to its own file """
-        # Fill the screen with white
-        screen.fill((255, 255, 255))
+    # def draw(self):
+    #     """ TODO(bhollaway): move this to its own file """
+    #     # Fill the screen with white
+    #     screen.fill((255, 255, 255))
 
     def main_loop(self):
         """
@@ -113,6 +112,7 @@ class Runner:
 
         self.log.warning("Exiting now!")
         self.save_progress()
+
 
 def main():
     pg.init()
