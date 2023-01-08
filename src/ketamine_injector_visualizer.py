@@ -23,7 +23,7 @@ class InjectorParams:
 
 def get_injector_params():
     return [
-        InjectorParams(key=K_q, name="1mg of K-Dust", img_name="dust_pile.png"),
+        InjectorParams(key=K_q, name="1g of K-Dust", img_name="dust_pile.png"),
         InjectorParams(
             key=K_w, name="The PinpricKer", img_name="pinpricker.jpg", text_color=WHITE
         ),
