@@ -13,12 +13,14 @@ def get_keys():
 def get_injectors():
     """So many sharp objects to collect!"""
     base_cost = 10
+    cost_mult = 1.5
+    inject_mult = 1.3
     return [
         KetamineInjectorVisualizer(
-            init_cost=base_cost**i,
-            init_inject=base_cost ** (i - 1),
-            cost_mult=1.5,
-            inject_mult=1.3,
+            init_cost=(base_cost**(i+1) if (i+1) > 0 else 10 / cost_mult),
+            init_inject=(base_cost ** ((i+1) - 1) if (i+1) > 0 else 1 / inject_mult),
+            cost_mult=cost_mult,
+            inject_mult=inject_mult,
             keyboard_key=key,
         )
         for i, key in enumerate(get_keys())
@@ -70,8 +72,9 @@ class KetamineInjector(object):
         If the key is for injecting, return the amount to inject.
         """
         # TODO(bhollaway): handle upgrades
-        if event["key"] == self.key:
-            return inject_ketamine()
+        if event.key == self.key:
+            return self.inject_ketamine()
+        return 0
 
 
 class KetamineInjectorVisualizer(KetamineInjector, pygame.sprite.Sprite):

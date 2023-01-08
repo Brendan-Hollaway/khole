@@ -1,11 +1,12 @@
-import pygame
+import pygame as pg
 from typing import Optional
+import log
 
 # from ketamine_injector import KetamineInjector, get_injectors()
 from ketamine_injector import get_injectors
 
 # Type aliases for type hints
-Event = pygame.event.Event
+Event = pg.event.Event
 
 
 class Runner:
@@ -27,13 +28,17 @@ class Runner:
         Started at the bottom, now I'm lying on my bottom, about to
         be injected with enough ketamine to see into the void.
         """
+        self.log = log.get_logger()
+
         self.running_on_ketamine = True
         self.curr_ketamine = 0
 
         self.injectors = get_injectors()
+        self.injectors[0].upgrade_injector() # first injector is free!
 
-        self.screen = pygame.display.set_mode(self.SCREEN_SIZE)
+        self.screen = pg.display.set_mode(self.SCREEN_SIZE)
         self.injecting_time_type = self.init_injecting_time()
+        pg.event.set_blocked(pg.MOUSEMOTION)
 
     def save_progress(self):
         """Even quitters get a second chance..."""
@@ -46,15 +51,20 @@ class Runner:
 
         Return TIME_TO_QUIT if it's time to quit :'(
         """
+        self.log.debug(f"event: {event}")
         # Wow, giving up already?
-        if event.type == pygame.QUIT:
+        if event.type == pg.QUIT:
             self.running_on_ketamine = False
             return self.TIME_TO_QUIT
 
         # Mash those keys
-        elif event.type == pygame.KEYDOWN:
-            for injector in injectors:
+        elif event.type == pg.KEYDOWN:
+            for injector in self.injectors:
                 self.curr_ketamine += injector.handle_key_down(event)
+
+        elif event.type == self.injecting_time_type:
+            self.curr_ketamine += self.injecting_time()
+            self.log.info(f"Ketamine post injection: {self.curr_ketamine:.2f}")
 
         return self.KEEP_PLAYING
 
@@ -64,18 +74,23 @@ class Runner:
 
         Return the amount of ketamine to inject
         """
+        self.log.info("It's injecting time!")
         moar_ketamine = 0
-        for injector in injectors:
-            moar_ketamine += injector.inject_ketamine(event)
+        for injector in self.injectors:
+            moar_ketamine += injector.inject_ketamine()
         return moar_ketamine
 
     def init_injecting_time(self) -> int:
         """
         We're on the clock y'all: every second, it's injecting time!
         """
-        injecting_time_type = pygame.event.custom_type()
+        # injecting_time_type = pg.event.custom_type()
+        injecting_time_type = pg.USEREVENT
+        self.log.info(f"injecting type: {injecting_time_type}")
+        self.log.info(f": {injecting_time_type}")
         injecting_time_ms = 1000
-        pygame.time.set_timer(injecting_time_type, injecting_time_ms)
+        # pg.time.set_timer(Event(injecting_time_type), injecting_time_ms)
+        pg.time.set_timer(injecting_time_type, injecting_time_ms)
         return injecting_time_type
 
     def draw(self):
@@ -90,19 +105,20 @@ class Runner:
         Ba-dum-tss
         """
         while self.running_on_ketamine:
-            for event in pygame.event.get():
-                update = self.handle_event(event)
-                if update == self.TIME_TO_QUIT:
-                    break
-                curr_ketamine = update
+            event = pg.event.wait()
+            update = self.handle_event(event)
+            if update == self.TIME_TO_QUIT:
+                break
+            curr_ketamine = update
 
+        self.log.warning("Exiting now!")
         self.save_progress()
 
 def main():
-    pygame.init()
+    pg.init()
     runner = Runner()
     runner.main_loop()
-    pygame.quit()
+    pg.quit()
 
 
 if __name__ == "__main__":  # If it's not, honestly, what are you even doing
