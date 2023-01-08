@@ -103,8 +103,6 @@ class Runner:
                     event, self.curr_ketamine
                 )
 
-        # return self.KEEP_PLAYING
-
     def injecting_time(self) -> float:
         """
         It's time for us to all go to our special place now... It's injecting time!
@@ -127,12 +125,12 @@ class Runner:
         return injecting_time_type
 
     def clear(self):
-        """TODO(bhollaway): move this to its own file"""
+        """Let me be clear with you: This just wipes the slate clean."""
         # Fill the screen with white
         self.screen.fill((255, 255, 255))
 
     def update_ketamine_counter(self):
-        antialias = True
+        """C'mon man, how big is the next hit gonna be?"""
         counter_text = f"Ketamine: {self.curr_ketamine:.0f} Grams"
         counter_text_surface = write_text(
             counter_text,
@@ -143,14 +141,21 @@ class Runner:
         )
 
         status = self.status.get_status(self.curr_ketamine)
-        font = KETAMINE_STATUS_FONT if status != "ACHIEVED K-HOLE" else KETAMINE_VICTORY_FONT
+        font = (
+            KETAMINE_STATUS_FONT
+            if status != "ACHIEVED K-HOLE"
+            else KETAMINE_VICTORY_FONT
+        )
         status_text = f"Status: {status}"
-        vert_offset = counter_text_surface.get_size()[1]
-        write_text(status_text, self.screen, Align.TOP_CENTER, KETAMINE_COUNTER_COLOR, font=font, offset=(0, vert_offset))
-        # ketamine_counter = self.font.render(text, antialias, KETAMINE_COUNTER_COLOR)
-        # rect = pg.rect.Rect(0, 0, 0, 0)
-        # rect.midtop = (SCREEN_WIDTH / 2 - ketamine_counter.get_width() / 2, 0)
-        # self.screen.blit(ketamine_counter, rect)
+        vert_offset = counter_text_surface.get_size()[1] # Put it below the counter
+        write_text(
+            status_text,
+            self.screen,
+            Align.TOP_CENTER,
+            KETAMINE_COUNTER_COLOR,
+            font=font,
+            offset=(0, vert_offset),
+        )
 
     def main_loop(self):
         """

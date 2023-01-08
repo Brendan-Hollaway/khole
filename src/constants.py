@@ -14,7 +14,7 @@ TOTAL_INJECTOR_HEIGHT = SCREEN_HEIGHT - STATUS_BAR_SIZE[1]
 # How big can you take?
 INJECTOR_SIZE = (
     SCREEN_WIDTH / 2,
-    TOTAL_INJECTOR_HEIGHT / (NUM_INJECTORS / 2) ,
+    TOTAL_INJECTOR_HEIGHT / (NUM_INJECTORS / 2),
 )
 
 UPGRADE_BUTTON_SIZE = (INJECTOR_SIZE[0], INJECTOR_SIZE[1] / 8)
@@ -29,7 +29,7 @@ IMAGE_NAME_TEXT_COLOR = BLACK
 
 FPS = 120  # Go big or go home
 
-# TODO(bhollaway): parameterize, pick a better font
+# TODO(bhollaway): parameterize based on screen size
 KETAMINE_FONT = pg.font.Font("../assets/fonts/joystix_mono.ttf", 25)
 KETAMINE_STATUS_FONT = pg.font.Font("../assets/fonts/joystix_mono.ttf", 20)
 KETAMINE_VICTORY_FONT = pg.font.Font("../assets/fonts/joystix_mono.ttf", 30)

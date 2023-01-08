@@ -22,7 +22,6 @@ class InjectorParams:
 
 
 def get_injector_params():
-    # "Joint", "Syringe",
     return [
         InjectorParams(key=K_q, name="1mg of K-Dust", img_name="dust_pile.png"),
         InjectorParams(
